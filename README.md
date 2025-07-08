@@ -72,3 +72,15 @@ Once the predictions are complete, you can export results using the **Download C
 ```bash
 git clone https://github.com/your-username/cryptosense-ai.git
 cd cryptosense-ai
+
+### 2. Install Requirements:
+```bash
+pip install -r requirements.txt
+
+### 3. Run the app:
+```bash
+streamlit run cryptosense_app.py
+
+
+
+
