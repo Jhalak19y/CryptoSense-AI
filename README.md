@@ -68,7 +68,7 @@ Once the predictions are complete, you can export results using the **Download C
 
 ## 🛠️ Run Locally
 
-### 1. Clone this repo:
+### Clone this repo:
 ```bash
 git clone https://github.com/your-username/cryptosense-ai.git
 cd cryptosense-ai
