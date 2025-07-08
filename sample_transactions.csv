@@ -1,0 +1,6 @@
+amount,confirmations,gas_fee,account_age_days,is_whale_transfer
+500,6,3.2,400,0
+100000,0,0.0,10,1
+80,2,5.5,2000,0
+50,9,1.0,150,0
+250000,0,0.0,5,1
