@@ -54,7 +54,7 @@ Upload `.csv` file with columns:
 
 Amount, Confirmations, GasFee, WalletAgeDays, WhaleTransfer
 
-📥 [Download Sample CSV](https://raw.githubusercontent.com/Jhalak19y/cryptosense-ai/main/sample_transactions.csv)
+📥 [Download Sample CSV]https://github.com/Jhalak19y/CryptoSense-AI/blob/main/sample_transactions.csv
 
 ---
 
