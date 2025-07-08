@@ -172,7 +172,9 @@ with tab2:
             raise ValueError("yfinance returned empty")
     except:
         # Fallback to local GitHub CSV file
-        url = "https://raw.githubusercontent.com/your-username/cryptosense-ai/main/btc_data.csv"
+        
+        url = "https://raw.githubusercontent.com/Jhalak19y/cryptosense-ai/main/btc_data.csv"
+
         df = pd.read_csv(url)
         df.columns = ['ds', 'y']
         df['ds'] = pd.to_datetime(df['ds'])
