@@ -35,7 +35,7 @@
 
 > Replace this with your own screenshot after deployment:
 
-![App Screenshot](https://via.placeholder.com/800x400?text=Your+App+Demo+Screenshot+Here)
+![App Screenshot]https://github.com/Jhalak19y/CryptoSense-AI/blob/main/app_screenshot.png
 
 ---
 
