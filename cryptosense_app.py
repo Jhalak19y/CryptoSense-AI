@@ -160,12 +160,25 @@ with tab2:
     n_days = st.slider("🔮 Predict how many days ahead?", 7, 90, 30)
 
     @st.cache_data
+    @st.cache_data
     def load_btc_data():
+    import pandas as pd
+    try:
         import yfinance as yf
         df = yf.download('BTC-USD', start='2020-01-01')
         df = df.reset_index()[['Date', 'Close']]
         df.columns = ['ds', 'y']
-        return df
+        if df.empty or df['y'].isnull().sum() > len(df) - 2:
+            raise ValueError("yfinance returned empty")
+    except:
+        # Fallback to local GitHub CSV file
+        url = "https://raw.githubusercontent.com/your-username/cryptosense-ai/main/btc_data.csv"
+        df = pd.read_csv(url)
+        df.columns = ['ds', 'y']
+        df['ds'] = pd.to_datetime(df['ds'])
+    return df
+
+     
 
     btc_data = load_btc_data()
 
