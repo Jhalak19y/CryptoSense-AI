@@ -2,157 +2,90 @@ import streamlit as st
 import pandas as pd
 import numpy as np
 from sklearn.ensemble import IsolationForest
-from datetime import datetime
 import plotly.express as px
 
 st.set_page_config(page_title="CryptoSense AI", layout="wide")
-st.title("🛡️ CryptoSense AI – Cryptocurrency Fraud Detection")
+st.title("🛡️ CryptoSense AI – Cryptocurrency Fraud Detection & BTC Forecast")
 
-# 🔹 Sidebar Help
-st.sidebar.markdown("### 📘 How it Works")
-st.sidebar.info("""
-This app uses **Isolation Forest** to detect fraudulent crypto transactions based on unusual patterns in:
-- Amount
-- Confirmations
-- Gas Fees
-- Wallet Age
-- Whale Activity
-""")
+tab1, tab2 = st.tabs(["🧪 Fraud Detection", "📈 Bitcoin Forecast"])
 
-# 🔹 Date-Time Display
-st.caption(f"📅 Last checked: {datetime.now().strftime('%d %b %Y, %I:%M %p')}")
-
-# 🔹 ML Model Trainer
-@st.cache_data
-def train_model():
-    data = pd.DataFrame({
-        'amount': np.random.exponential(1000, 1000),
-        'confirmations': np.random.randint(0, 10, 1000),
-        'gas_fee': np.random.exponential(10, 1000),
-        'account_age_days': np.random.randint(0, 3650, 1000),
-        'is_whale_transfer': np.random.choice([0, 1], size=1000, p=[0.95, 0.05])
-    })
-    for _ in range(20):
-        data.loc[np.random.randint(0, 1000), ['amount', 'gas_fee', 'confirmations']] = [100000, 0, 0]
-    model = IsolationForest(n_estimators=100, contamination=0.02, random_state=42)
-    model.fit(data)
-    return model
-
-model = train_model()
-
-# 🔹 Tabbed Layout
-tab1, tab2 = st.tabs(["🧠 Fraud Detection", "📈 Bitcoin Forecast (Coming Soon)"])
-
-# -------------------
-# TAB 1 – FRAUD DETECTION
-# -------------------
+# ---------------------------- TAB 1: FRAUD DETECTION ----------------------------
 with tab1:
+    st.subheader("🧪 Detect Suspicious Crypto Transactions")
+    st.markdown("Enter data manually or upload a `.csv` file to detect potential fraud using Isolation Forest.")
 
-    mode = st.radio("Choose Input Method:", ["🔢 Manual Entry", "📤 Upload CSV"])
+    sample_data = pd.DataFrame({
+        'Amount': [120000, 0.5, 8700],
+        'Confirmations': [0, 3, 8],
+        'GasFee': [0.0001, 0.001, 0],
+        'WalletAgeDays': [1, 400, 12],
+        'WhaleTransfer': [1, 0, 1]
+    })
 
-    if mode == "🔢 Manual Entry":
-        st.subheader("📝 Enter Transaction")
+    input_mode = st.radio("Choose input mode:", ["Manual Entry", "Upload CSV"])
 
-        with st.form(key="form_input"):
-            amount = st.number_input("Amount (USD) 💰", min_value=0.0, help="Enter the transaction value in USD")
-            confirmations = st.slider("Confirmations 🔄", 0, 10)
-            gas_fee = st.number_input("Gas Fee ⛽", min_value=0.0)
-            account_age = st.slider("Wallet Age (Days) 📆", 0, 3650)
-            is_whale = st.selectbox("Is Whale Transfer? 🐋", [0, 1])
+    if input_mode == "Manual Entry":
+        with st.form("manual_form"):
+            amount = st.number_input("💰 Amount (in USD)", min_value=0.0, value=1000.0)
+            confirmations = st.slider("⛓️ Confirmations", 0, 10, 2)
+            gas_fee = st.number_input("⛽ Gas Fee (ETH)", min_value=0.0, value=0.0005)
+            wallet_age = st.number_input("📅 Wallet Age (in days)", min_value=0, value=30)
+            whale_transfer = st.selectbox("🐋 Whale Transfer?", ["No", "Yes"])
 
-            col1, col2 = st.columns(2)
-            submit = col1.form_submit_button("🔍 Predict")
-            reset = col2.form_submit_button("🧹 Clear")
+            submit = st.form_submit_button("🔍 Predict")
+            clear = st.form_submit_button("🧹 Clear")
 
-        if submit:
-            input_df = pd.DataFrame([[amount, confirmations, gas_fee, account_age, is_whale]],
-                columns=['amount', 'confirmations', 'gas_fee', 'account_age_days', 'is_whale_transfer'])
-            prediction = model.predict(input_df)[0]
-            score = model.decision_function(input_df)[0]
-
-            if score < -0.1:
-                risk = "🚨 High Risk"
-                st.error(risk)
-            elif score < 0.1:
-                risk = "⚠️ Medium Risk"
-                st.warning(risk)
-            else:
-                risk = "✅ Low Risk"
-                st.success(risk)
-
-            st.caption(f"Anomaly Score: {score:.4f}")
-
-        if reset:
+        if clear:
             st.experimental_rerun()
 
-    elif mode == "📤 Upload CSV":
-        st.subheader("📄 Upload Transaction CSV")
-        file = st.file_uploader("Upload a CSV with columns: amount, confirmations, gas_fee, account_age_days, is_whale_transfer", type="csv")
+        if submit:
+            input_data = pd.DataFrame([[
+                amount, confirmations, gas_fee, wallet_age, 1 if whale_transfer == "Yes" else 0
+            ]], columns=['Amount', 'Confirmations', 'GasFee', 'WalletAgeDays', 'WhaleTransfer'])
 
-        st.markdown("""
-        📥 [Download Sample CSV](https://raw.githubusercontent.com/your-username/your-repo-name/main/sample_transactions.csv)
-        """)
+            model = IsolationForest(contamination=0.1, random_state=42)
+            model.fit(sample_data)
+            prediction = model.predict(input_data)
 
-        if file:
-            df = pd.read_csv(file)
-            predictions = model.predict(df)
-            scores = model.decision_function(df)
+            result = "🚨 Suspicious Transaction" if prediction[0] == -1 else "✅ Normal Transaction"
+            st.success(f"**Prediction:** {result}")
 
-            def get_label(score):
-                if score < -0.1:
-                    return "🚨 High Risk"
-                elif score < 0.1:
-                    return "⚠️ Medium Risk"
-                else:
-                    return "✅ Low Risk"
+    else:
+        uploaded_file = st.file_uploader("📤 Upload a CSV file", type=["csv"])
 
-            df['Score'] = scores
-            df['Risk'] = df['Score'].apply(get_label)
+        if st.button("📂 Try Example"):
+            data = sample_data.copy()
+        elif uploaded_file:
+            try:
+                data = pd.read_csv(uploaded_file)
+                if not all(col in data.columns for col in sample_data.columns):
+                    st.error("❌ CSV must contain: Amount, Confirmations, GasFee, WalletAgeDays, WhaleTransfer")
+                    st.stop()
+            except Exception as e:
+                st.error(f"❌ Failed to read CSV: {e}")
+                st.stop()
+        else:
+            data = None
 
-            # Filter by amount
-            st.markdown("### 🎯 Filter by Transaction Amount")
-            min_amt = st.slider("Minimum Amount", 0, int(df['amount'].max()), 100)
-            df = df[df['amount'] >= min_amt]
+        if data is not None:
+            st.write("🔎 Input Data:", data)
 
-            st.dataframe(df)
+            model = IsolationForest(contamination=0.1, random_state=42)
+            model.fit(sample_data)
 
-            # Metrics
-            total = len(df)
-            fraud = len(df[df['Risk'] == "🚨 High Risk"])
-            normal = len(df[df['Risk'] == "✅ Low Risk"])
+            predictions = model.predict(data)
+            data['Prediction'] = np.where(predictions == -1, '🚨 Fraud', '✅ Legit')
 
-            st.metric("📊 Total", total)
-            st.metric("🚨 High Risk", fraud)
-            st.metric("✅ Low Risk", normal)
+            st.success("✅ Predictions completed.")
+            st.dataframe(data)
 
-            # Pie Chart
-            pie_chart = px.pie(df, names='Risk', title='Prediction Distribution')
-            st.plotly_chart(pie_chart, use_container_width=True)
+            fig = px.histogram(data, x='Prediction', color='Prediction', title="Prediction Summary")
+            st.plotly_chart(fig)
 
-            # Download Results
-            csv = df.to_csv(index=False).encode('utf-8')
-            st.download_button("📥 Download Results CSV", csv, file_name="fraud_predictions.csv", mime="text/csv")
+            csv = data.to_csv(index=False).encode('utf-8')
+            st.download_button("📥 Download Predictions", csv, "predictions.csv", "text/csv")
 
-        st.markdown("📥 Or click below to try example test data:")
-
-        if st.button("✨ Try Example"):
-            sample = pd.DataFrame({
-                'amount': [500, 100000, 80, 50, 250000],
-                'confirmations': [6, 0, 2, 9, 0],
-                'gas_fee': [3.2, 0.0, 5.5, 1.0, 0.0],
-                'account_age_days': [400, 10, 2000, 150, 5],
-                'is_whale_transfer': [0, 1, 0, 0, 1]
-            })
-            sample['Score'] = model.decision_function(sample)
-            sample['Risk'] = sample['Score'].apply(get_label)
-            st.write("🧪 Sample Predictions", sample)
-
-            csv = sample.to_csv(index=False).encode('utf-8')
-            st.download_button("📥 Download Sample CSV", csv, file_name="sample_results.csv", mime="text/csv")
-
-# -------------------
-# TAB 2 – BTC Forecast (Placeholder)
-# -------------------
+# ---------------------------- TAB 2: BITCOIN FORECAST ----------------------------
 with tab2:
     st.header("📈 Bitcoin Price Forecast")
     st.markdown("This section uses Facebook Prophet to forecast future Bitcoin prices based on historical data.")
@@ -160,27 +93,22 @@ with tab2:
     n_days = st.slider("🔮 Predict how many days ahead?", 7, 90, 30)
 
     @st.cache_data
-    @st.cache_data
     def load_btc_data():
-    import pandas as pd
-    try:
-        import yfinance as yf
-        df = yf.download('BTC-USD', start='2020-01-01')
-        df = df.reset_index()[['Date', 'Close']]
-        df.columns = ['ds', 'y']
-        if df.empty or df['y'].isnull().sum() > len(df) - 2:
-            raise ValueError("yfinance returned empty")
-    except:
-        # Fallback to local GitHub CSV file
-        
-        url = "https://raw.githubusercontent.com/Jhalak19y/cryptosense-ai/main/btc_data.csv"
-
-        df = pd.read_csv(url)
-        df.columns = ['ds', 'y']
-        df['ds'] = pd.to_datetime(df['ds'])
-    return df
-
-     
+        import pandas as pd
+        try:
+            import yfinance as yf
+            df = yf.download('BTC-USD', start='2020-01-01')
+            df = df.reset_index()[['Date', 'Close']]
+            df.columns = ['ds', 'y']
+            if df.empty or df['y'].isnull().sum() > len(df) - 2:
+                raise ValueError("yfinance returned empty")
+        except:
+            # fallback to static CSV from GitHub
+            url = "https://raw.githubusercontent.com/Jhalak19y/cryptosense-ai/main/btc_data.csv"
+            df = pd.read_csv(url)
+            df.columns = ['ds', 'y']
+            df['ds'] = pd.to_datetime(df['ds'])
+        return df
 
     btc_data = load_btc_data()
 
