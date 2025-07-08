@@ -154,4 +154,42 @@ with tab1:
 # TAB 2 – BTC Forecast (Placeholder)
 # -------------------
 with tab2:
-    st.info("📈 This tab will soon include live Bitcoin price predictions using Facebook Prophet.")
+    st.header("📈 Bitcoin Price Forecast")
+    st.markdown("This section uses Facebook Prophet to forecast future Bitcoin prices based on historical data.")
+
+    n_days = st.slider("🔮 Predict how many days ahead?", 7, 90, 30)
+
+    @st.cache_data
+    def load_btc_data():
+        import yfinance as yf
+        df = yf.download('BTC-USD', start='2020-01-01')
+        df = df.reset_index()[['Date', 'Close']]
+        df.columns = ['ds', 'y']
+        return df
+
+    btc_data = load_btc_data()
+
+    try:
+        from prophet import Prophet
+    except:
+        from fbprophet import Prophet  # fallback if using older version
+
+    model = Prophet(daily_seasonality=True)
+    model.fit(btc_data)
+
+    future = model.make_future_dataframe(periods=n_days)
+    forecast = model.predict(future)
+
+    st.subheader(f"📅 Forecast for Next {n_days} Days")
+    fig1 = model.plot(forecast)
+    st.pyplot(fig1)
+
+    st.markdown("📉 **Forecast Columns Explained:**")
+    st.caption("""
+    - `yhat`: Predicted price  
+    - `yhat_lower`, `yhat_upper`: Prediction range (uncertainty)
+    """)
+
+    # Download forecast option
+    csv = forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail(n_days).to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download Forecast CSV", csv, file_name="bitcoin_forecast.csv", mime="text/csv")
