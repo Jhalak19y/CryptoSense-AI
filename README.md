@@ -1,86 +1,125 @@
-# 🛡️ CryptoSense AI – Cryptocurrency Fraud Detection App
+# 🛡️ CryptoSense AI – Cryptocurrency Fraud Detection & Bitcoin Forecasting App
 
-CryptoSense AI is a powerful, interactive machine learning web app built with **Streamlit** that helps detect potentially **fraudulent cryptocurrency transactions** in real time.
+**CryptoSense AI** is an interactive **machine learning web app** built with **Streamlit** that allows users to:
 
-> ⚠️ Fraud in crypto is growing rapidly — this tool empowers users, exchanges, and students to **analyze, detect, and understand** suspicious transactions based on behavior patterns.
+- 🧠 Detect potentially **fraudulent cryptocurrency transactions** using ML
+- 📈 Forecast **Bitcoin prices** with Prophet based on historical data
+
+> 🚨 With rising crypto scams, this app empowers users, exchanges, and students to detect risks and analyze future trends intelligently.
 
 ---
 
 ## 🧠 Features
 
-✅ Real-time prediction using ML (Isolation Forest)  
-✅ Two input modes: Manual Entry OR CSV Upload  
-✅ Built-in **Try Example** feature with test data  
-✅ Detects anomalies like:
-- Whale transfers from new accounts
-- Zero confirmations
-- Zero gas fees
-- Extremely high-value transactions
+### ✅ Real-Time Crypto Fraud Detection
+- Manual input or CSV file upload
+- Built with **Isolation Forest** model
+- Detects:
+  - Whale transfers from new wallets
+  - Extremely high/low transaction values
+  - Zero confirmations or gas fees
+- "Try Example" button with test data
+- "Clear Input" button to reset form
+- Export predictions to CSV
 
-✅ Predicts and displays results with clean UI  
-✅ Download results as CSV  
-✅ Option to reset/clear manual inputs  
-
----
-
-## 🚀 Demo
-
-![App Screenshot](https://via.placeholder.com/800x400?text=App+Demo+Screenshot)
-
-Or try it out:
-(*Replace this with your actual Streamlit Cloud link after deployment*)
+### 📈 Bitcoin Price Forecasting (NEW!)
+- Forecasts next 7–90 days using **Facebook Prophet**
+- Uses live BTC data from `yfinance`
+- Automatically falls back to preloaded data if API fails
+- Interactive chart of predicted price trends
+- Export forecast as CSV
 
 ---
 
-## 📦 Tech Stack
+## 📸 Demo Screenshot
 
-- **Python**
-- **Streamlit** – for the web interface
-- **Scikit-learn** – for fraud detection (Isolation Forest)
-- **Pandas** + **NumPy** – for data handling
+> Replace this with your own screenshot after deployment:
+
+![App Screenshot](https://via.placeholder.com/800x400?text=Your+App+Demo+Screenshot+Here)
 
 ---
 
-## 🧪 Try It Now
+## 🧪 Try It Yourself
 
 ### ➤ Option 1: Manual Entry
+Enter:
+- 💰 Amount
+- ⛓️ Confirmations
+- ⛽ Gas Fee
+- 📅 Wallet Age
+- 🐋 Whale Transfer (Yes/No)
 
-Enter a transaction directly in the form:
-- Amount
-- Confirmations
-- Gas fee
-- Wallet age
-- Whale transfer status
+### ➤ Option 2: Upload a CSV
+Upload `.csv` file with columns:
 
-### ➤ Option 2: Upload CSV
+Amount, Confirmations, GasFee, WalletAgeDays, WhaleTransfer
 
-Upload a `.csv` with columns:
-
-📥 [Download Sample CSV](https://raw.githubusercontent.com/your-username/your-repo-name/main/sample_transactions.csv)
-
----
-
-## 📤 Download Prediction Results
-
-Once the predictions are complete, you can export results using the **Download CSV** button provided.
+📥 [Download Sample CSV](https://raw.githubusercontent.com/Jhalak19y/cryptosense-ai/main/sample_transactions.csv)
 
 ---
 
-## 🛠️ Run Locally
+## 📈 Bitcoin Forecast (Prophet)
 
-### Clone this repo:
+- Set number of forecast days using slider
+- Automatically fetches BTC historical data
+- If yfinance fails, loads backup CSV
+- Interactive line plot with confidence intervals
+- Download forecast as `.csv`
+
+---
+
+## 📤 Export Options
+
+- ✅ Download predictions as CSV
+- ✅ Download BTC price forecast
+- 🔁 Reset manual input instantly
+
+---
+
+## 🛠️ Run the App Locally
+
+### 1. Clone this repository:
 ```bash
-git clone https://github.com/your-username/cryptosense-ai.git
+git clone https://github.com/Jhalak19y/cryptosense-ai.git
 cd cryptosense-ai
-
-### 2. Install Requirements:
-```bash
+2. Install requirements:
 pip install -r requirements.txt
 
-### 3. Run the app:
-```bash
+3. Run the Streamlit app:
 streamlit run cryptosense_app.py
+🌐 Deploy Online
+You can deploy this app easily using Streamlit Cloud:
 
+Push your code to a public GitHub repo
 
+Go to https://streamlit.io/cloud
 
+Click "New app" and connect your repo
 
+Done ✅
+
+📁 Repository Structure
+
+cryptosense-ai/
+├── cryptosense_app.py         ← Main Streamlit app
+├── requirements.txt           ← Required Python packages
+├── btc_data.csv               ← Backup BTC price data
+├── sample_transactions.csv    ← Test data for fraud detection
+└── README.md                  ← You're here!
+
+⚙️ Tech Stack
+Python
+
+Streamlit – Web UI
+
+scikit-learn – Isolation Forest for anomaly detection
+
+Prophet – BTC price forecasting
+
+yfinance – Fetching live BTC price
+
+pandas, numpy, plotly
+
+🙋‍♀️ Author
+Jhalak Yadav
+BCA in Media & IT | Passionate about Machine Learning, Fintech & App Dev
